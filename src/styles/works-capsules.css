@@ -1,0 +1,117 @@
+/* Styles for WorksCapsules component (moved from works.css) */
+.works-capsules {
+  /* default capsule height when expanded variable isn't set elsewhere */
+  display: flex;
+  gap: 0.75rem;
+  padding: 8px 6px;
+  align-items: center; /* center pills beneath the rows */
+  width: min(92%, 980px);
+  height: var(--capsule-h);
+  margin: 0.75rem auto 0 auto; /* sit directly inside the frame */
+  overflow-x: auto; /* enable manual horizontal scroll */
+  overflow-y: hidden;
+  flex-wrap: nowrap; /* ensure a single row only */
+  background: transparent; /* background moved to .works-expanded so capsules sit inside */
+  border-radius: 14px;
+  box-shadow: none; /* avoid separate inset shadow */
+  position: relative;
+  z-index: 1; /* sits inside the frame */
+  -webkit-overflow-scrolling: touch;
+  /* Keep a stable scrollbar gutter so the page doesn't shift when it appears */
+  scrollbar-gutter: stable;
+  /* ensure scrollbar is visible on desktop (Firefox) */
+  scrollbar-width: thin;
+}
+
+/* Capsule-specific responsiveness */
+@media (max-width: 900px) {
+  .works-capsules {
+    gap: 0.6rem;
+    height: calc(var(--capsule-h) * 0.95);
+  }
+  .works-capsule {
+    min-width: 64px;
+    max-width: 140px;
+    aspect-ratio: 16 / 9;
+  }
+}
+
+@media (max-width: 480px) {
+  /* On very small screens switch capsules to a wrapped grid for better reachability */
+  .works-capsules {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+    gap: 0.5rem;
+    height: auto;
+    overflow-x: visible;
+    padding: 8px 6px;
+    justify-items: center;
+  }
+  .works-capsule {
+    width: 100%;
+    min-width: 0;
+    max-width: 220px;
+    aspect-ratio: 16 / 9;
+  }
+}
+
+.works-capsule {
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 0; /* remove inner padding so image fills the capsule fully */
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-grid;
+  place-items: center;
+  overflow: hidden;
+  box-sizing: border-box;
+  /* responsive capsule size: width scales with viewport, height via container variable */
+  /* keep a consistent aspect ratio (width : height). Use aspect-ratio with
+     fixed height so the capsule maintains the same proportion at all sizes. */
+  aspect-ratio: 10 / 60; /* width / height ratio (adjust if you want wider pills) */
+  height: calc(var(--capsule-h) - 12px);
+  /* let width be computed from aspect-ratio; provide a min/max so pills are consistent */
+  min-width: 72px;
+  max-width: 180px;
+  flex: 0 0 auto; /* prevent shrinking so pills stay full-sized */
+  border-radius: 999px; /* pill shape */
+  transition: width 260ms cubic-bezier(.2,.9,.2,1), transform 200ms ease;
+}
+.works-capsule img {
+  width: 100%;
+  height: 100%;
+  border-radius: 0; /* container handles rounding */
+  object-fit: cover;
+  display: block;
+}
+
+/* When a capsule is expanded, only increase width (sides) while keeping
+   top/bottom aligned — height stays constant. We increase max width and
+   allow the pill to visually expand without changing its vertical position. */
+.works-capsule.expanded {
+  /* Expansion of capsules disabled — keep visual size consistent. */
+  width: calc(min(var(--capsule-h) * 0.66, 180px) + 24px);  
+  min-width: 72px;
+}
+
+/* Slight focus/active visual when a capsule is selected (not expanded) */
+.works-capsule.active {
+  box-shadow: 0 6px 20px rgba(255,80,80,0.08);
+}
+
+/* Dark scrollbar styling for capsules (manual scroll) */
+.works-capsules::-webkit-scrollbar { height: 10px; }
+.works-capsules::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.6); border-radius: 999px; border: 2px solid rgba(255,255,255,0.02); }
+.works-capsules::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+.works-capsules { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.6) rgba(0,0,0,0.2); }
+
+/* hide default scrollbars but keep manual scroll usable */
+.works-capsules::-webkit-scrollbar { height: 10px; }
+.works-capsules::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 999px; }
+.works-capsules::-webkit-scrollbar-track { background: transparent; }
+
+.works-capsule.active {
+  box-shadow: 0 0 0 3px rgba(255,80,80,0.12), 0 6px 18px rgba(0,0,0,0.6);
+}
+

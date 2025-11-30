@@ -1,0 +1,230 @@
+/* Styles specific to WORKS section */
+
+/* center the whole works card content so rows and capsules sit in the middle */
+.section-card--works {
+  /* Works section specific layout tweaks */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  /* responsive width: stay within viewport while keeping a comfortable max */
+  width: min(92vw, 1200px);
+  margin: 0 auto; /* center the card in the page */
+  justify-content: center;
+  direction: ltr;
+  /* responsive horizontal padding so the card compresses smoothly */
+  padding-inline: clamp(8px, 2vw, 24px);
+}
+
+/* ensure the big section title lines up with the inner frame */
+.section-card--works .section-title {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 12px;
+  box-sizing: border-box;
+  /* Use flex so the inline circle and letters center accurately */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* defensive centering for inner frame and rows */
+.works-expanded,
+.works-expanded.open,
+.works-band,
+.works-row,
+.works-capsules {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Ensure bands stack vertically and occupy full width so each subsection
+   appears below the previous one. Remove any left/right positioning which
+   only applies to positioned elements and can cause unexpected layout. */
+.works-band {
+  width: 100%;
+  display: block;
+}
+
+/* Extra vertical spacing for individual subsections when expanded. These
+   n-th child selectors lower the 2nd, 3rd and 4th bands slightly so they
+   appear visually separated and don't feel crowded under the featured area. */
+.works-expanded.open .works-band:nth-child(2) {
+  margin-top: 18px;
+}
+.works-expanded.open .works-band:nth-child(3) {
+  margin-top: 22px;
+}
+.works-expanded.open .works-band:nth-child(4) {
+  margin-top: 26px;
+}
+
+@media (max-width: 640px) {
+  /* reduce the extra spacing on small screens so content stays compact */
+  .works-expanded.open .works-band:nth-child(2),
+  .works-expanded.open .works-band:nth-child(3),
+  .works-expanded.open .works-band:nth-child(4) {
+    margin-top: 12px;
+  }
+}
+
+/* Expanded area (collapsed by default) */
+.works-expanded {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 420ms cubic-bezier(.2,.9,.2,1), opacity 300ms ease;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.works-expanded.open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  max-height: 2600px; /* increased so all subsections fit without overlap */
+  overflow: visible; /* allow capsules to be scrolled inside container */
+  /* constrain the expanded frame so it centers and doesn't span full viewport */
+    /* expose a CSS variable for the computed inner width so child
+      sizing can use a stable value to calculate per-item sizes */
+    --work-inner-width: min(92vw, 980px);
+    width: var(--work-inner-width);
+    margin: 0 auto;
+  /* make the expanded area look like a single rounded dark frame so
+     the capsule row appears as an inner layer rather than floating */
+  background: linear-gradient(180deg, rgba(20,8,8,0.95), rgba(32,8,8,0.95));
+  /* responsive capsule height variable — used to size bottom padding so
+     the capsule row is always contained inside this frame */
+  --capsule-h: clamp(96px, 14vw, 200px);
+  /* add extra bottom padding so the capsule row and rows below the
+     featured frame have breathing room and avoid overlap */
+  padding: 18px 12px calc(var(--capsule-h) + 48px) 12px;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6) inset;
+}
+
+/* center inner content of the expanded area */
+.works-expanded {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* When a capsule is expanded, only increase width (sides) while keeping
+   top/bottom aligned — height stays constant. We increase max width and
+   allow the pill to visually expand without changing its vertical position. */
+.works-capsule.expanded {
+  /* Expansion of capsules disabled — keep visual size consistent. */
+  width: calc(min(var(--capsule-h) * 0.66, 180px) + 24px);  
+  min-width: 72px;
+}
+
+/* Slight focus/active visual when a capsule is selected (not expanded) */
+.works-capsule.active {
+  box-shadow: 0 6px 20px rgba(255,80,80,0.08);
+}
+
+/* Preview modal styles for the slightly larger view when a scrolling image is clicked */
+.preview-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1400;
+}
+.preview-overlay {
+  animation: overlay-fade 220ms cubic-bezier(.2,.8,.2,1) both;
+}
+.preview-modal {
+  max-width: 86vw;
+  /* limit preview height to half the viewport so image never appears excessively large */
+  max-height: 50vh;
+  /* keep width responsive but avoid forcing extremely wide modals */
+  width: min(900px, 92%);
+  background: rgba(10,10,10,0.9);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  /* subtle pop animation when opening */
+  animation: preview-pop 220ms cubic-bezier(.2,.8,.2,1) both;
+}
+.preview-modal img {
+  /* Constrain the image to half the viewport height while allowing
+     it to scale responsively in width to preserve aspect ratio. */
+  max-height: 50vh;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+  object-fit: contain;
+  transition: transform 260ms cubic-bezier(.2,.9,.2,1);
+}
+
+@keyframes preview-pop {
+  from { transform: scale(0.96); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes overlay-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.preview-modal:hover img {
+  transform: scale(1.03);
+}
+.preview-close {
+  position: absolute;
+  right: 8px;
+  top: 6px;
+  background: transparent;
+  color: #fff;
+  border: none;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 6px;
+}
+.works-capsules.half-width {
+  max-width: 50%;
+}
+
+/* Dark scrollbar styling for capsules (manual scroll) */
+.works-capsules::-webkit-scrollbar { height: 10px; }
+.works-capsules::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.6); border-radius: 999px; border: 2px solid rgba(255,255,255,0.02); }
+.works-capsules::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+.works-capsules { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.6) rgba(0,0,0,0.2); }
+
+/* hide default scrollbars but keep manual scroll usable */
+.works-capsules::-webkit-scrollbar { height: 10px; }
+.works-capsules::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 999px; }
+.works-capsules::-webkit-scrollbar-track { background: transparent; }
+
+/* (removed small padding-bottom override above to keep the larger
+  calculated padding that accommodates all subsections) */
+.works-capsule.active {
+  box-shadow: 0 0 0 3px rgba(255,80,80,0.12), 0 6px 18px rgba(0,0,0,0.6);
+}
+
+/* small responsive tweaks */
+@media (max-width: 640px) {
+  .works-frame img { width: 96%; }
+  .works-capsule img { width: 72px; height: 104px; }
+}
+
+.section-card--works .section-title {
+  color: #f3f4f6; /* slightly muted white */
+  font-weight: 500;
+}
+
+.section-card--works:hover {
+  box-shadow: 0 6px 20px rgba(255,34,34,0.06);
+}

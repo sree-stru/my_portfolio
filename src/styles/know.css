@@ -1,0 +1,196 @@
+/* Styles specific to KNOW ME section */
+
+.section-card--know {
+  /* make the KNOW ME card visually distinct */
+  border-left: 6px solid rgba(222, 26, 26, 0.12);
+  background: linear-gradient(180deg, rgba(223, 25, 25, 0.02), transparent);
+  position: relative;
+
+  /* shared size variable so parent can grow to fit the circle */
+  /* smaller, more centered circle to match the reference layout */
+    /* larger expansion circle so the Know Me panel fits the full bio text;
+      increased viewport fraction and max to allow much bigger circles on wide screens */
+    --know-size: clamp(360px, 44vw, 920px);
+  /* gap from circle edge to title halves when open */
+  --know-gap: 1rem; /* tunable gap between circle boundary and letters */
+  transition: padding 360ms cubic-bezier(.2,.9,.2,1);
+  overflow: visible;
+}
+
+.o-button {
+  border: 2px solid rgba(196, 31, 31, 0.12);
+  width: 1.1em;
+  height: 1.1em;
+  font-size: 0.95em;
+}
+
+.o-button:active,
+.o-button.pressed {
+  background: #ffffff;
+  color: #000000;
+}
+
+/* Button focus outline for accessibility */
+.o-button:focus {
+  outline: 2px solid rgba(148, 7, 7, 0.9);
+  outline-offset: 3px;
+}
+
+/* Title layout: keep letters readable and allow horizontal shift when circle opens */
+.section-card--know .section-title {
+  position: relative;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: padding 360ms cubic-bezier(.2,.9,.2,1);
+  padding-left: 1rem;
+  padding-right: 1rem;
+  white-space: nowrap; /* prevent title from wrapping to multiple lines */
+}
+
+.section-card--know .title-left,
+.section-card--know .title-right {
+  position: relative;
+  z-index: 50;
+  display: inline-block;
+  transition: transform 360ms cubic-bezier(.2,.9,.2,1), left 360ms, right 360ms;
+  pointer-events: none;
+  white-space: nowrap; /* ensure each half stays on one line */
+  line-height: 1; /* keep them vertically centered */
+}
+
+/* Make the left/right title halves large and visually prominent (matches reference) */
+.section-card--know .title-left,
+.section-card--know .title-right {
+  font-weight: 200;
+  color: #ffffff;
+  /* Use the same responsive sizing as site section titles so KNOW/WORKS/CONTACT match */
+  font-size: clamp(2.6rem, 8vw, 7.2rem);
+  letter-spacing: 0.08em;
+}
+
+.know-toggle {
+  z-index: 45;
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+/* Inline expanding circle for Know Me section (no overlay). The circle
+   scales from the small `o-circle` into a large circular panel inside
+   the section. */
+.know-circle {
+  /* use the same size value as the parent so padding calculations match */
+  width: var(--know-size);
+  height: var(--know-size);
+  position: absolute;
+    left: 50%;
+    top: 50%;
+    /* start translated so the circle appears to originate from the small O button.
+      `--know-init-x` and `--know-init-y` are set in JS (px offsets from center).
+      We combine them with the usual -50% centering so translate computes as:
+      translate(calc(-50% + dx), calc(-50% + dy)). When open we reset to
+      translate(-50%, -50%) (centered) with scale(1). */
+    transform: translate(calc(-50% + var(--know-init-x, 0px)), calc(-50% + var(--know-init-y, 0px))) scale(0);
+  border-radius: 50%;
+  background: #0b0b0b; /* black circle like reference */
+  box-shadow: 0 18px 50px rgba(0,0,0,0.55), inset 0 2px 0 rgba(255,255,255,0.03);
+  /* subtle outer ring for definition against the dark background */
+  border: 6px solid rgba(0,0,0,0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 320ms cubic-bezier(.2,.9,.2,1), opacity 220ms ease;
+  opacity: 0;
+  z-index: 30;
+  pointer-events: none;
+}
+.know-circle.open {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+.know-inner {
+  /* Inner content scales with the circle so long bios fit without overflowing. */
+  /* Use nearly full circle width minus padding/border so text has room to wrap cleanly. */
+  width: calc(var(--know-size) - 72px);
+  max-width: 840px;
+  max-height: calc(var(--know-size) - 72px);
+  box-sizing: border-box;
+  color: #e8eef2; /* slightly muted white for readability */
+  text-align: center;
+  padding: 0.6rem 1rem;
+  /* Use Island Moments inside the circle when available and scale text with circle size */
+  font-family: 'Island Moments', cursive, 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  /* Base font-size scales with the circle via the --know-size variable (px). */
+  font-size: clamp(0.7rem, calc(var(--know-size) * 0.035), 1.15rem);
+  line-height: 1.4;
+  /* Ensure long strings (dots) wrap or break rather than escaping the circle */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  overflow: hidden; /* prevent visual overflow outside the circle */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.know-heading { margin: 0 0 0.6rem 0; font-weight: 500; font-size: 1.05em; }
+.know-circle p { margin: 0.35rem 0; line-height: 1.4; font-size: 0.9em; color: #c9d0d4; }
+
+/* When the circle is open, make the o-button appear larger (subtle) */
+.section-card--know.open .know-toggle { transform: scale(1.12); }
+
+/* Expand the parent card vertically so the full circle fits inside.
+   The card gains top/bottom padding equal to half the circle size (plus a little gap).
+   This lets the circle sit centered while the card grows above and below, matching the reference. */
+.section-card--know.open {
+  padding-top: calc(var(--know-size) / 2 + 1rem);
+  padding-bottom: calc(var(--know-size) / 2 + 1rem);
+}
+
+/* When open, keep title centered but absolutely position halves at the circle edges */
+.section-card--know.open .section-title {
+  padding-left: 1rem; /* keep small padding, don't shift entire title */
+  padding-right: 1rem;
+}
+
+/* When the circle is open the title is hidden - only the circle is visible */
+.section-card--know.open .section-title {
+  display: none !important;
+}
+
+/* absolutely place title halves relative to the title center so they sit near the circle edge */
+.section-card--know.open .title-left,
+.section-card--know.open .title-right {
+  position: absolute;
+  top: 50%;
+}
+
+/* Align the left half so its right edge sits just left of the circle boundary,
+   and the right half so its left edge sits just right of the circle boundary. */
+.section-card--know.open .title-left {
+  left: calc(50% - (var(--know-size) / 2) - var(--know-gap));
+  transform: translate(-100%, -50%);
+}
+.section-card--know.open .title-right {
+  left: calc(50% + (var(--know-size) / 2) + var(--know-gap));
+  transform: translate(0, -50%);
+}
+
+/* Hide the small clickable O while the big circle is open so it doesn't show as a white dot */
+.section-card--know.open .know-toggle {
+  opacity: 0;
+  transform: scale(0.001);
+  pointer-events: none;
+}
+
+/* Translate each half of the title fully outside the expanded circle */
+.section-card--know.open .title-left {
+  /* push the left half further left (outside the circle) while keeping
+     vertical centering */
+  transform: translate(calc(-1 * (var(--know-size) / 2 + 4rem)), -50%);
+}
+.section-card--know.open .title-right {
+  /* push the right half further right (outside the circle) while keeping
+     vertical centering */
+  transform: translate(calc(var(--know-size) / 2 + 4rem), -50%);
+}

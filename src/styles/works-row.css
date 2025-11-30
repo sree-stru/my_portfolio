@@ -1,0 +1,215 @@
+/* Styles for WorksRow component (moved from works.css) */
+
+.works-strip {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.5rem 0.25rem;
+  border-radius: 999px;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 0.75rem;
+}
+.works-strip::-webkit-scrollbar { display: none; }
+.works-strip.reverse { }
+
+.works-row {
+  width: 100%;
+  /* respect container's computed inner width when available */
+  max-width: var(--work-inner-width, 980px);
+  margin: 0 auto;
+  gap: 0.5rem;
+  box-sizing: border-box;
+  padding-inline: 12px; /* keep some gutter so items don't touch edge */
+}
+.works-row.scroll {
+  display: flex;
+  /* stretch so items fill the row height and tiles fit the frame */
+  align-items: stretch;
+  padding: 6px 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  justify-content: center; /* center items when they don't overflow */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  gap: 0.5rem;
+  /* prevent wrapping so the duplicated items form a continuous horizontal strip
+     which the JS auto-scroll logic expects */
+  flex-wrap: nowrap;
+  min-width: 100%;
+}
+
+/* For rows that are auto-scrolled by JS (requestAnimationFrame) we want
+   linear motion without the browser trying to snap or smooth programmatic
+   scrollLeft changes. Disable snapping and smooth scroll behavior. */
+.works-row.scroll.auto-scroll {
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+}
+
+/* CSS-driven continuous scroll: when `auto-css` is present we'll animate
+   the inner .scroll-track using a translateX from 0 -> -50% so the duplicated
+   content loops seamlessly. The JS RAF fallback remains available; CSS
+   animation provides a simple linear behavior without JS timers. */
+.works-row.scroll.auto-css {
+  overflow: hidden; /* hide native scrollbars while animating */
+  /* remove extra padding/centering so the track starts exactly at the left edge */
+  padding-inline: 0 !important;
+  justify-content: flex-start !important;
+}
+.works-row.scroll .scroll-track {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+  width: max-content; /* size to content (we expect duplicated content) */
+  flex-wrap: nowrap;
+  margin: 0; /* ensure no extra gap from default margins */
+}
+.works-row.scroll.auto-css .scroll-track {
+  /* duration provided via inline style --scroll-duration (e.g. '60s') */
+  animation-name: scroll-left;
+  animation-duration: var(--scroll-duration, 40s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+  /* ensure transform origin is left so translateX aligns predictably */
+  transform-origin: 0 50%;
+}
+.works-row.scroll.auto-css .scroll-track.reverse {
+  animation-direction: reverse;
+}
+
+@keyframes scroll-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes scroll-left-px {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-1 * var(--scroll-distance))); }
+}
+
+/* Ensure each square remains sized as before when inside .scroll-track */
+.works-row.scroll .scroll-track .works-square {
+  flex: 0 0 clamp(96px, 16vw, calc((var(--work-inner-width) - 48px) / 4));
+  max-width: calc((var(--work-inner-width) - 48px) / 4);
+  aspect-ratio: 1/1;
+  border-radius: 4px;
+  scroll-snap-align: center;
+  overflow: hidden;
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.works-row.scroll.auto-css .scroll-track .works-square img {
+  object-fit: contain;
+  object-position: center;
+  background: #0b0b0b;
+}
+
+.works-row.scroll .works-square {
+  /* default: five squares across on wide viewports but slightly larger
+    than before so thumbnails are more visible */
+  /* Responsive sizing: keep squares proportional to the container.
+    Use clamp so on small screens they don't become too tiny and on
+    large screens they don't get excessively wide. */
+  /* show 4 items across by default (larger thumbnails) */
+  flex: 0 0 clamp(96px, 16vw, calc((var(--work-inner-width) - 48px) / 4));
+  max-width: calc((var(--work-inner-width) - 48px) / 4);
+  aspect-ratio: 1/1;
+  border-radius: 4px;
+  scroll-snap-align: center;
+  overflow: hidden;
+  display: block;
+  width: 100%;
+  /* ensure the square respects aspect-ratio and stays within the row's max-height */
+  height: auto;
+}
+
+.works-row.scroll .works-square img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  background: #0b0b0b;
+  display: block;
+}
+
+.works-row.scroll::-webkit-scrollbar { height: 10px; }
+.works-row.scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.5); border-radius: 999px; border: 2px solid rgba(255,255,255,0.03); }
+.works-row.scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.25); }
+.works-row.scroll { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.5) rgba(0,0,0,0.25); }
+
+/* Responsive adjustments moved from works.css */
+@media (max-width: 1200px) {
+  .works-row.scroll .works-square {
+    /* reduce to 3 columns on medium viewports */
+    flex: 0 0 calc((100% / 3) - 0.45rem);
+    max-width: calc((100% / 3) - 0.45rem);
+  }
+}
+
+@media (max-width: 900px) {
+  .works-row.scroll .works-square {
+    /* reduce to 2 columns on small tablets / large phones */
+    flex: 0 0 calc((100% / 2) - 0.4rem);
+    max-width: calc((100% / 2) - 0.4rem);
+  }
+}
+
+/* small-screen behavior: keep horizontal scroll and smaller tiles */
+@media (max-width: 640px) {
+  .works-row.scroll {
+    display: flex;
+    gap: 0.5rem;
+    padding: 3px 0;
+    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
+  }
+  .works-row.scroll .works-square {
+    /* show ~3 tiles across at small widths while still allowing horizontal
+       scroll; use viewport-relative sizing so tiles resize with window. */
+    /* slightly larger mobile tiles and show ~2 across on small phones */
+    flex: 0 0 clamp(72px, 30vw, calc((var(--work-inner-width) - 48px) / 2));
+    max-width: calc((var(--work-inner-width) - 48px) / 2);
+  }
+}
+
+/* Limit the visual height of scroll rows so they don't expand beyond the
+   frame and push into the capsules; keeps a consistent layout on large screens */
+.works-row.scroll { max-height: 500px; }
+.works-row.scroll .works-square { max-height: 500px; }
+
+/* Keep the scrolling strips from wrapping and ensure items stay inline */
+.works-row.scroll { flex-wrap: nowrap; }
+
+/* per-row stronger responsiveness selectors (2nd and 3rd subsections)
+   these were added so the first and second scroll rows can resize more aggressively */
+.works-expanded > .works-band:nth-child(2) .works-row.scroll .works-square {
+  /* 2nd subsection: bias toward larger thumbnails (3 per row desktop) */
+  flex: 0 0 clamp(112px, 14vw, calc((var(--work-inner-width) - 48px) / 3));
+  max-width: calc((var(--work-inner-width) - 48px) / 3);
+  transition: flex-basis 220ms ease, max-width 220ms ease;
+}
+@media (min-width: 1200px) {
+  .works-expanded > .works-band:nth-child(2) .works-row.scroll .works-square {
+    flex: 0 0 calc((var(--work-inner-width) - 48px) / 4);
+    max-width: calc((var(--work-inner-width) - 48px) / 4);
+  }
+}
+
+/* Apply the same stronger responsiveness to the 3rd subsection (second scroll row) */
+.works-expanded > .works-band:nth-child(3) .works-row.scroll .works-square {
+  /* 3rd subsection: also prefer larger thumbnails (3 per row desktop) */
+  flex: 0 0 clamp(112px, 14vw, calc((var(--work-inner-width) - 48px) / 3));
+  max-width: calc((var(--work-inner-width) - 48px) / 3);
+  transition: flex-basis 220ms ease, max-width 220ms ease;
+}
+@media (min-width: 1200px) {
+  .works-expanded > .works-band:nth-child(3) .works-row.scroll .works-square {
+    flex: 0 0 calc((var(--work-inner-width) - 48px) / 4);
+    max-width: calc((var(--work-inner-width) - 48px) / 4);
+  }
+}
+

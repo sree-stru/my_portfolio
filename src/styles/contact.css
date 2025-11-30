@@ -1,0 +1,15 @@
+/* Styles specific to GET IN TOUCH section */
+
+.section-card--contact {
+  border: 1px dashed rgba(255,255,255,0.04);
+  background: linear-gradient(180deg, rgba(255,0,0,0.02), rgba(0,0,0,0.02));
+}
+
+.section-card--contact .section-title {
+  color: #fff7f7;
+  font-weight: 500;
+}
+
+.section-card--contact:hover {
+  box-shadow: 0 10px 34px rgba(0,0,0,0.55);
+}
