@@ -28,13 +28,13 @@ export default function Contact() {
         >
           <a
             className="contact-label"
-            href="mailto:anusree.k.jinan123@gmail.com"
+            href="mailto:anusreekjinan@gmail.com"
             onClick={(e) => {
               // Prevent the parent span from toggling when the email link is clicked
               e.stopPropagation();
             }}
           >
-            anusree.k.jinan123@gmail.com
+            anusreekjinan@gmail.com
           </a>
         </span>
         UCH
